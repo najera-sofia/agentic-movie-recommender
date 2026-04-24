@@ -9,6 +9,8 @@ DO NOT change the model from gemma4:31b-cloud
 """
 
 import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 import json
 import re
 import time
