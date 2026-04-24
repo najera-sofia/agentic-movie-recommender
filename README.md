@@ -172,7 +172,7 @@ The evaluation harness was used iteratively throughout development. Each run pro
 
 | Metric | Score | Details |
 |--------|-------|---------|
-| **Programmatic Tests** | 14/14 ✅ | All tests: valid JSON, correct IDs, no watch history duplicates, descriptions ≤500 chars, responses <20s |
+| **Programmatic Tests** | 14/14 | All tests: valid JSON, correct IDs, no watch history duplicates, descriptions ≤500 chars, responses <20s |
 | **Relevance (LLM Judge)** | 3.5/5 avg | Range: 1–5. Strong on straightforward preferences (superhero action, rom-com, sci-fi). Weaker on niche requests (campy cult classics, runtime constraints). |
 | **Persuasiveness (LLM Judge)** | 3.86/5 avg | Range: 2–5. Pitch quality consistently engaging. Fallback descriptions (3/5) less compelling than LLM-generated (4.5/5). |
 | **Response Latency** | 5.14s avg | Range: 3.11–18.14s. One timeout on stage 1 (superhero action test, 18.14s) recovered via retry logic. |
@@ -182,23 +182,23 @@ The evaluation harness was used iteratively throughout development. Each run pro
 
 | Test | Result | Judge Comment |
 |------|--------|----------------|
-| Superhero action | ✅ Pass | Relevance 5/5, Persuasiveness 4/5. Epic recommendation perfectly matches request. |
-| Hard sci-fi | ✅ Pass | Relevance 5/5, Persuasiveness 4/5. Interstellar is a cerebral masterpiece match. |
-| Superhero fatigue | ✅ Pass | Relevance 5/5, Persuasiveness 5/5. Perfect pivot to Oppenheimer; high-energy pitch. |
-| Feel-good rom-com | ✅ Pass | Relevance 4/5, Persuasiveness 4/5. Beauty and the Beast fits all criteria. |
-| Avoid violence ⚠️ | ❌ Fail | Relevance 1/5, Persuasiveness 4/5. Recommended "Scary Movie 5" (horror) when user asked for peaceful. Content keyword filter missed this edge case. |
-| Runtime constraint | ❌ Fail | Relevance 1/5, Persuasiveness 3/5. "Downsizing" is 125 min, violates <90 min constraint. Runtime filter needs refinement. |
-| Campy cult classic | ⚠️ Partial | Relevance 2/5, Persuasiveness 4/5. "The Substance" is high-quality satire, not campy B-movie vibe. Non-literal translation needs examples. |
+| Superhero action | Pass | Relevance 5/5, Persuasiveness 4/5. Epic recommendation perfectly matches request. |
+| Hard sci-fi | Pass | Relevance 5/5, Persuasiveness 4/5. Interstellar is a cerebral masterpiece match. |
+| Superhero fatigue | Pass | Relevance 5/5, Persuasiveness 5/5. Perfect pivot to Oppenheimer; high-energy pitch. |
+| Feel-good rom-com | Pass | Relevance 4/5, Persuasiveness 4/5. Beauty and the Beast fits all criteria. |
+| Avoid violence | Fail | Relevance 1/5, Persuasiveness 4/5. Recommended "Scary Movie 5" (horror) when user asked for peaceful. Content keyword filter missed this edge case. |
+| Runtime constraint | Fail | Relevance 1/5, Persuasiveness 3/5. "Downsizing" is 125 min, violates <90 min constraint. Runtime filter needs refinement. |
+| Campy cult classic | Partial | Relevance 2/5, Persuasiveness 4/5. "The Substance" is high-quality satire, not campy B-movie vibe. Non-literal translation needs examples. |
 
 **Key Findings:**
 
-✅ **Strengths:**
+ **Strengths:**
 - Semantic retrieval excels at genre matching and "like X" enrichment
 - Two-stage LLM keeps recommendations in-distribution and descriptions compelling
 - Retry logic prevents timeout failures in most cases
 - Deterministic fallback ensures system robustness
 
-⚠️ **Areas for Improvement:**
+ **Areas for Improvement:**
 - Content keyword filter missed "Scary Movie 5" horror framing despite "avoid violence" request
 - Runtime filter allowed 125-min film for "<90 min" request (filter may not be parsing correctly)
 - Non-literal translation ("campy cult classic") benefits from more diverse examples
