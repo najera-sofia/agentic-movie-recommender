@@ -48,7 +48,7 @@ VALID_IDS = set(_df["tmdb_id"].tolist())
 
 # Pre-load embedding model at startup so first request isn't slow
 print("[INFO] Loading embedding model...", end=" ", flush=True)
-_EMBED_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+_EMBED_MODEL = SentenceTransformer("./model")
 print("ready.")
 
 # Pre-built O(1) lookup dict - avoids expensive _df[_df["tmdb_id"]==tid] calls in hot loops
