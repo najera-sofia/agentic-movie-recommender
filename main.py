@@ -1,23 +1,23 @@
-# -*- coding: utf-8 -*-
-"""
-FastAPI wrapper for movie recommender agent
-This is the entry point for Leapcell deployment.
-"""
-
 import os
-import sys
-
-# Set ChromaDB to use /tmp (writable) instead of current dir
 os.environ["CHROMA_DB_DIR"] = "/tmp/chroma_store"
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
+import threading
 
-# Import the recommendation function from llm.py
-from llm import get_recommendation
+app = FastAPI()
 
-app = FastAPI(title="Movie Recommender Agent")
+# Load model in background AFTER server starts
+recommender = None
+
+def load_model():
+    global recommender
+    from llm import get_recommendation
+    recommender = get_recommendation
+    print("Model loaded!")
+
+threading.Thread(target=load_model, daemon=True).start()
 
 class HistoryItem(BaseModel):
     tmdb_id: int
@@ -28,32 +28,26 @@ class RecommendationRequest(BaseModel):
     preferences: str
     history: List[HistoryItem] = []
 
-class RecommendationResponse(BaseModel):
-    tmdb_id: int
-    user_id: int
-    description: str
+@app.get("/")
+async def root():
+    return {"status": "ok"}
+
+@app.get("/kaithhealth")
+async def health():
+    return {"status": "ok"}
 
 @app.post("/recommend")
-async def recommend(request: RecommendationRequest) -> RecommendationResponse:
-    """Get a movie recommendation."""
+async def recommend(request: RecommendationRequest):
+    while recommender is None:
+        import time
+        time.sleep(0.5)
     history_ids = [item.tmdb_id for item in request.history]
-    
-    result = get_recommendation(
+    result = recommender(
         preferences=request.preferences,
         history=request.history,
         history_ids=history_ids
     )
-    
-    return RecommendationResponse(
-        tmdb_id=result["tmdb_id"],
-        user_id=request.user_id,
-        description=result["description"]
-    )
-
-@app.get("/")
-async def root():
-    """Health check endpoint."""
-    return {"status": "ok", "service": "Movie Recommender Agent"}
+    return {"tmdb_id": result["tmdb_id"], "user_id": request.user_id, "description": result["description"]}
 
 if __name__ == "__main__":
     import uvicorn
