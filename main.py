@@ -48,6 +48,10 @@ async def recommend(request: RecommendationRequest):
     while recommender is None and waited < 120:
         await asyncio.sleep(1)
         waited += 1
+    
+    if recommender is None:
+        raise HTTPException(status_code=503, detail="Model still loading, try again in 30 seconds")
+    
     history_ids = [item.tmdb_id for item in request.history]
     result = recommender(
         preferences=request.preferences,
