@@ -8,8 +8,12 @@ Environment variables required:
 DO NOT change the model from gemma4:31b-cloud
 """
 
-import json
 import os
+os.environ["HF_HOME"] = "/tmp/huggingface"
+os.environ["SENTENCE_TRANSFORMERS_HOME"] = "/tmp/sentence_transformers"
+os.environ["TRANSFORMERS_CACHE"] = "/tmp/huggingface"
+
+import json
 import re
 import time
 import argparse
