@@ -299,9 +299,3 @@ dspy-ai                 Offline prompt optimization
 - Jiale Guan
 - Zhihan Zhang
 - Doreen ZHU
-
----
-
-## License
-
-This project is part of the Spring 2026 Agentic AI assignment.
