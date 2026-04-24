@@ -32,8 +32,8 @@ class RecommendationRequest(BaseModel):
 async def root():
     return {"status": "ok"}
 
-@app.get("/kaithhealth")
-async def health():
+@app.get("/kaithheathcheck")
+async def health2():
     return {"status": "ok"}
 
 @app.post("/recommend")
