@@ -1,10 +1,6 @@
 
 import os
 os.environ["CHROMA_DB_DIR"] = "/tmp/chroma_store"
-os.environ["HF_HOME"] = "/tmp/huggingface"
-os.environ["TRANSFORMERS_CACHE"] = "/tmp/huggingface"
-os.environ["SENTENCE_TRANSFORMERS_HOME"] = "/tmp/sentence_transformers"
-os.environ["CHROMA_DB_DIR"] = "/tmp/chroma_store"
 
 from fastapi import FastAPI
 from pydantic import BaseModel

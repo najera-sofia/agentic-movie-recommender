@@ -9,10 +9,6 @@ DO NOT change the model from gemma4:31b-cloud
 """
 
 import os
-os.environ["HF_HOME"] = "/tmp/huggingface"
-os.environ["SENTENCE_TRANSFORMERS_HOME"] = "/tmp/sentence_transformers"
-os.environ["TRANSFORMERS_CACHE"] = "/tmp/huggingface"
-
 import json
 import re
 import time
@@ -49,7 +45,7 @@ VALID_IDS = set(_df["tmdb_id"].tolist())
 # Pre-load embedding model at startup so first request isn't slow
 print("[INFO] Loading embedding model...", end=" ", flush=True)
 _MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model")
-_EMBED_MODEL = SentenceTransformer(_MODEL_PATH)
+_EMBED_MODEL = SentenceTransformer(_MODEL_PATH, local_files_only=True)
 print("ready.")
 
 # Pre-built O(1) lookup dict - avoids expensive _df[_df["tmdb_id"]==tid] calls in hot loops
