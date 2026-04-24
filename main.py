@@ -4,10 +4,15 @@ FastAPI wrapper for movie recommender agent
 This is the entry point for Leapcell deployment.
 """
 
+import os
+import sys
+
+# Set ChromaDB to use /tmp (writable) instead of current dir
+os.environ["CHROMA_DB_DIR"] = "/tmp/chroma_store"
+
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List, Dict
-import json
+from typing import List
 
 # Import the recommendation function from llm.py
 from llm import get_recommendation
@@ -30,26 +35,15 @@ class RecommendationResponse(BaseModel):
 
 @app.post("/recommend")
 async def recommend(request: RecommendationRequest) -> RecommendationResponse:
-    """
-    Get a movie recommendation based on user preferences and watch history.
-    
-    Args:
-        request: RecommendationRequest with user_id, preferences, and history
-        
-    Returns:
-        RecommendationResponse with tmdb_id, user_id, and description
-    """
-    # Extract history IDs
+    """Get a movie recommendation."""
     history_ids = [item.tmdb_id for item in request.history]
     
-    # Get recommendation from llm.py
     result = get_recommendation(
         preferences=request.preferences,
         history=request.history,
         history_ids=history_ids
     )
     
-    # Add user_id to response
     return RecommendationResponse(
         tmdb_id=result["tmdb_id"],
         user_id=request.user_id,

@@ -29,7 +29,7 @@ LLM_TIMEOUT_SECONDS = 9    # stage 1 cap
 STAGE2_TIMEOUT_SECONDS = 7  # stage 2 cap: no retry on stage 2
                             # total budget: 12 + 8 = 20s, within the 20s limit
 MIN_VOTE_COUNT = 500        # filter out obscure/low-quality movies
-CHROMA_PATH = os.path.join(os.path.dirname(__file__), ".chroma_store")
+CHROMA_PATH = os.environ.get("CHROMA_DB_DIR", os.path.join(os.path.dirname(__file__), ".chroma_store"))
 DATA_PATH = os.path.join(os.path.dirname(__file__), "tmdb_top1000_movies.csv")
 
 _df = pd.read_csv(DATA_PATH)
