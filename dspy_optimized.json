@@ -1,0 +1,180 @@
+{
+  "selector": {
+    "predict": {
+      "traces": [],
+      "train": [],
+      "demos": [
+        {
+          "augmented": true,
+          "preferences": "I love superhero action movies with epic battles.",
+          "history_text": "none",
+          "movie_list": "- tmdb_id=496243 | \"Parasite\" (2019) | genres: Comedy, Thriller, Drama | director: Bong Joon Ho | cast: Song Kang-ho, Lee Sun-kyun, Cho Yeo-jeong, Choi Woo-shik, Pa | overview: All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpe\n- tmdb_id=157336 | \"Interstellar\" (2014) | genres: Adventure, Drama, Science Fiction | director: Christopher Nolan | cast: Matthew McConaughey, Anne Hathaway, Michael Caine, Jessica C | overview: The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the va\n- tmdb_id=372058 | \"Your Name.\" (2016) | genres: Animation, Romance, Drama | director: Makoto Shinkai | cast: Ryunosuke Kamiki, Mone Kamishiraishi, Ryo Narita, Aoi Yuuki, | overview: High schoolers Mitsuha and Taki are complete strangers living separate lives. But one night, they suddenly switch places. Mitsuha wakes up in Taki\u2019s b\n- tmdb_id=324857 | \"Spider-Man: Into the Spider-Verse\" (2018) | genres: Animation, Action, Adventure, Science Fiction | director: Bob Persichetti, Peter Ramsey, Rodney Rothman | cast: Shameik Moore, Jake Johnson, Hailee Steinfeld, Mahershala Al | overview: Struggling to find his place in the world while juggling school and family, Brooklyn teenager Miles Morales is unexpectedly bitten by a radioactive sp\n- tmdb_id=244786 | \"Whiplash\" (2014) | genres: Drama, Music, Thriller | director: Damien Chazelle | cast: Miles Teller, J.K. Simmons, Paul Reiser, Melissa Benoist, Au | overview: Under the direction of a ruthless instructor, a talented young drummer begins to pursue perfection at any cost, even his humanity.\n- tmdb_id=569094 | \"Spider-Man: Across the Spider-Verse\" (2023) | genres: Animation, Action, Adventure, Science Fiction | director: Justin K. Thompson, Kemp Powers, Joaquim Dos Santos | cast: Shameik Moore, Hailee Steinfeld, Brian Tyree Henry, Luna Lau | overview: After reuniting with Gwen Stacy, Brooklyn\u2019s full-time, friendly neighborhood Spider-Man is catapulted across the Multiverse, where he encounters the S\n- tmdb_id=77338 | \"The Intouchables\" (2011) | genres: Drama, Comedy | director: \u00c9ric Toledano, Olivier Nakache | cast: Fran\u00e7ois Cluzet, Omar Sy, Anne Le Ny, Audrey Fleurot, Jos\u00e9ph | overview: A true story of two men who should never have met \u2013 a quadriplegic aristocrat who was injured in a paragliding accident and a young man from the proje\n- tmdb_id=299536 | \"Avengers: Infinity War\" (2018) | genres: Adventure, Action, Science Fiction | director: Joe Russo, Anthony Russo | cast: Robert Downey Jr., Chris Evans, Chris Hemsworth, Josh Brolin | overview: As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from \n- tmdb_id=299534 | \"Avengers: Endgame\" (2019) | genres: Adventure, Science Fiction, Action | director: Anthony Russo, Joe Russo | cast: Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemswort | overview: After the devastating events of Avengers: Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos. With the help of remaini\n- tmdb_id=378064 | \"A Silent Voice: The Movie\" (2016) | genres: Animation, Drama, Romance | director: Naoko Yamada | cast: Miyu Irino, Saori Hayami, Aoi Yuuki, Kensho Ono, Yuki Kaneko | overview: Shouya Ishida starts bullying the new girl in class, Shouko Nishimiya, because she is deaf. But as the teasing continues, the rest of the class starts",
+          "reasoning": "The user is looking for superhero action movies with epic battles. Several candidates match: \"Spider-Man: Into the Spider-Verse\", \"Spider-Man: Across the Spider-Verse\", \"Avengers: Infinity War\", and \"Avengers: Endgame\". Between these, the \"Avengers\" films are the pinnacle of \"epic battles\" involving massive ensembles of superheroes fighting high-stakes threats. \"Avengers: Endgame\" represents the culmination of these battles and is widely considered one of the most epic superhero events.",
+          "tmdb_id": 299534,
+          "reason": "Ultimate superhero action movie with the most epic ensemble battles."
+        },
+        {
+          "augmented": true,
+          "preferences": "Something funny and romantic, a feel-good date night movie.",
+          "history_text": "none",
+          "movie_list": "- tmdb_id=496243 | \"Parasite\" (2019) | genres: Comedy, Thriller, Drama | director: Bong Joon Ho | cast: Song Kang-ho, Lee Sun-kyun, Cho Yeo-jeong, Choi Woo-shik, Pa | overview: All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpe\n- tmdb_id=157336 | \"Interstellar\" (2014) | genres: Adventure, Drama, Science Fiction | director: Christopher Nolan | cast: Matthew McConaughey, Anne Hathaway, Michael Caine, Jessica C | overview: The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the va\n- tmdb_id=372058 | \"Your Name.\" (2016) | genres: Animation, Romance, Drama | director: Makoto Shinkai | cast: Ryunosuke Kamiki, Mone Kamishiraishi, Ryo Narita, Aoi Yuuki, | overview: High schoolers Mitsuha and Taki are complete strangers living separate lives. But one night, they suddenly switch places. Mitsuha wakes up in Taki\u2019s b\n- tmdb_id=324857 | \"Spider-Man: Into the Spider-Verse\" (2018) | genres: Animation, Action, Adventure, Science Fiction | director: Bob Persichetti, Peter Ramsey, Rodney Rothman | cast: Shameik Moore, Jake Johnson, Hailee Steinfeld, Mahershala Al | overview: Struggling to find his place in the world while juggling school and family, Brooklyn teenager Miles Morales is unexpectedly bitten by a radioactive sp\n- tmdb_id=244786 | \"Whiplash\" (2014) | genres: Drama, Music, Thriller | director: Damien Chazelle | cast: Miles Teller, J.K. Simmons, Paul Reiser, Melissa Benoist, Au | overview: Under the direction of a ruthless instructor, a talented young drummer begins to pursue perfection at any cost, even his humanity.\n- tmdb_id=569094 | \"Spider-Man: Across the Spider-Verse\" (2023) | genres: Animation, Action, Adventure, Science Fiction | director: Justin K. Thompson, Kemp Powers, Joaquim Dos Santos | cast: Shameik Moore, Hailee Steinfeld, Brian Tyree Henry, Luna Lau | overview: After reuniting with Gwen Stacy, Brooklyn\u2019s full-time, friendly neighborhood Spider-Man is catapulted across the Multiverse, where he encounters the S\n- tmdb_id=77338 | \"The Intouchables\" (2011) | genres: Drama, Comedy | director: \u00c9ric Toledano, Olivier Nakache | cast: Fran\u00e7ois Cluzet, Omar Sy, Anne Le Ny, Audrey Fleurot, Jos\u00e9ph | overview: A true story of two men who should never have met \u2013 a quadriplegic aristocrat who was injured in a paragliding accident and a young man from the proje\n- tmdb_id=299536 | \"Avengers: Infinity War\" (2018) | genres: Adventure, Action, Science Fiction | director: Joe Russo, Anthony Russo | cast: Robert Downey Jr., Chris Evans, Chris Hemsworth, Josh Brolin | overview: As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from \n- tmdb_id=299534 | \"Avengers: Endgame\" (2019) | genres: Adventure, Science Fiction, Action | director: Anthony Russo, Joe Russo | cast: Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemswort | overview: After the devastating events of Avengers: Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos. With the help of remaini\n- tmdb_id=378064 | \"A Silent Voice: The Movie\" (2016) | genres: Animation, Drama, Romance | director: Naoko Yamada | cast: Miyu Irino, Saori Hayami, Aoi Yuuki, Kensho Ono, Yuki Kaneko | overview: Shouya Ishida starts bullying the new girl in class, Shouko Nishimiya, because she is deaf. But as the teasing continues, the rest of the class starts",
+          "reasoning": "The user is looking for a \"funny and romantic, feel-good date night movie.\" \n- Parasite is a dark comedy/thriller.\n- Interstellar, Spider-Verse movies, Avengers, and Whiplash do not fit the romantic/funny criteria.\n- The Intouchables is feel-good and funny, but not romantic (it's a platonic friendship).\n- A Silent Voice is a romance, but it is a heavy drama centered on bullying and redemption, not a \"feel-good/funny\" date movie.\n- \"Your Name.\" is a romantic animation with a supernatural twist that is generally uplifting and visually stunning, fitting the \"romantic\" and \"feel-good\" request better than the other options.",
+          "tmdb_id": 372058,
+          "reason": "Romantic, feel-good animation perfect for a date night experience."
+        },
+        {
+          "augmented": true,
+          "preferences": "I want a dark psychological thriller that messes with my mind.",
+          "history_text": "none",
+          "movie_list": "- tmdb_id=496243 | \"Parasite\" (2019) | genres: Comedy, Thriller, Drama | director: Bong Joon Ho | cast: Song Kang-ho, Lee Sun-kyun, Cho Yeo-jeong, Choi Woo-shik, Pa | overview: All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpe\n- tmdb_id=157336 | \"Interstellar\" (2014) | genres: Adventure, Drama, Science Fiction | director: Christopher Nolan | cast: Matthew McConaughey, Anne Hathaway, Michael Caine, Jessica C | overview: The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the va\n- tmdb_id=372058 | \"Your Name.\" (2016) | genres: Animation, Romance, Drama | director: Makoto Shinkai | cast: Ryunosuke Kamiki, Mone Kamishiraishi, Ryo Narita, Aoi Yuuki, | overview: High schoolers Mitsuha and Taki are complete strangers living separate lives. But one night, they suddenly switch places. Mitsuha wakes up in Taki\u2019s b\n- tmdb_id=324857 | \"Spider-Man: Into the Spider-Verse\" (2018) | genres: Animation, Action, Adventure, Science Fiction | director: Bob Persichetti, Peter Ramsey, Rodney Rothman | cast: Shameik Moore, Jake Johnson, Hailee Steinfeld, Mahershala Al | overview: Struggling to find his place in the world while juggling school and family, Brooklyn teenager Miles Morales is unexpectedly bitten by a radioactive sp\n- tmdb_id=244786 | \"Whiplash\" (2014) | genres: Drama, Music, Thriller | director: Damien Chazelle | cast: Miles Teller, J.K. Simmons, Paul Reiser, Melissa Benoist, Au | overview: Under the direction of a ruthless instructor, a talented young drummer begins to pursue perfection at any cost, even his humanity.\n- tmdb_id=569094 | \"Spider-Man: Across the Spider-Verse\" (2023) | genres: Animation, Action, Adventure, Science Fiction | director: Justin K. Thompson, Kemp Powers, Joaquim Dos Santos | cast: Shameik Moore, Hailee Steinfeld, Brian Tyree Henry, Luna Lau | overview: After reuniting with Gwen Stacy, Brooklyn\u2019s full-time, friendly neighborhood Spider-Man is catapulted across the Multiverse, where he encounters the S\n- tmdb_id=77338 | \"The Intouchables\" (2011) | genres: Drama, Comedy | director: \u00c9ric Toledano, Olivier Nakache | cast: Fran\u00e7ois Cluzet, Omar Sy, Anne Le Ny, Audrey Fleurot, Jos\u00e9ph | overview: A true story of two men who should never have met \u2013 a quadriplegic aristocrat who was injured in a paragliding accident and a young man from the proje\n- tmdb_id=299536 | \"Avengers: Infinity War\" (2018) | genres: Adventure, Action, Science Fiction | director: Joe Russo, Anthony Russo | cast: Robert Downey Jr., Chris Evans, Chris Hemsworth, Josh Brolin | overview: As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from \n- tmdb_id=299534 | \"Avengers: Endgame\" (2019) | genres: Adventure, Science Fiction, Action | director: Anthony Russo, Joe Russo | cast: Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemswort | overview: After the devastating events of Avengers: Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos. With the help of remaini\n- tmdb_id=378064 | \"A Silent Voice: The Movie\" (2016) | genres: Animation, Drama, Romance | director: Naoko Yamada | cast: Miyu Irino, Saori Hayami, Aoi Yuuki, Kensho Ono, Yuki Kaneko | overview: Shouya Ishida starts bullying the new girl in class, Shouko Nishimiya, because she is deaf. But as the teasing continues, the rest of the class starts",
+          "reasoning": "The user is looking for a \"dark psychological thriller that messes with my mind.\" Among the provided candidates:\n- \"Parasite\" is a dark thriller with strong social commentary and unpredictable twists that fit the \"mind-messing\" and \"dark\" criteria.\n- \"Whiplash\" is an intense psychological drama/thriller focusing on obsession and abuse.\n- Other options (Interstellar, Spider-Verse, Avengers, etc.) are too action-oriented, sci-fi, or romantic/drama to fit the specific \"dark psychological thriller\" request.\nComparing \"Parasite\" and \"Whiplash,\" \"Parasite\" aligns more closely with the \"thriller\" aspect and the \"dark/mind-messing\" atmosphere the user is seeking.",
+          "tmdb_id": 496243,
+          "reason": "Dark, unpredictable psychological thriller with intense social tension and twists."
+        },
+        {
+          "preferences": "A gripping war movie with realistic battle scenes.",
+          "history_text": "none",
+          "movie_list": "- tmdb_id=496243 | \"Parasite\" (2019) | genres: Comedy, Thriller, Drama | director: Bong Joon Ho | cast: Song Kang-ho, Lee Sun-kyun, Cho Yeo-jeong, Choi Woo-shik, Pa | overview: All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpe\n- tmdb_id=157336 | \"Interstellar\" (2014) | genres: Adventure, Drama, Science Fiction | director: Christopher Nolan | cast: Matthew McConaughey, Anne Hathaway, Michael Caine, Jessica C | overview: The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the va\n- tmdb_id=372058 | \"Your Name.\" (2016) | genres: Animation, Romance, Drama | director: Makoto Shinkai | cast: Ryunosuke Kamiki, Mone Kamishiraishi, Ryo Narita, Aoi Yuuki, | overview: High schoolers Mitsuha and Taki are complete strangers living separate lives. But one night, they suddenly switch places. Mitsuha wakes up in Taki\u2019s b\n- tmdb_id=324857 | \"Spider-Man: Into the Spider-Verse\" (2018) | genres: Animation, Action, Adventure, Science Fiction | director: Bob Persichetti, Peter Ramsey, Rodney Rothman | cast: Shameik Moore, Jake Johnson, Hailee Steinfeld, Mahershala Al | overview: Struggling to find his place in the world while juggling school and family, Brooklyn teenager Miles Morales is unexpectedly bitten by a radioactive sp\n- tmdb_id=244786 | \"Whiplash\" (2014) | genres: Drama, Music, Thriller | director: Damien Chazelle | cast: Miles Teller, J.K. Simmons, Paul Reiser, Melissa Benoist, Au | overview: Under the direction of a ruthless instructor, a talented young drummer begins to pursue perfection at any cost, even his humanity.\n- tmdb_id=569094 | \"Spider-Man: Across the Spider-Verse\" (2023) | genres: Animation, Action, Adventure, Science Fiction | director: Justin K. Thompson, Kemp Powers, Joaquim Dos Santos | cast: Shameik Moore, Hailee Steinfeld, Brian Tyree Henry, Luna Lau | overview: After reuniting with Gwen Stacy, Brooklyn\u2019s full-time, friendly neighborhood Spider-Man is catapulted across the Multiverse, where he encounters the S\n- tmdb_id=77338 | \"The Intouchables\" (2011) | genres: Drama, Comedy | director: \u00c9ric Toledano, Olivier Nakache | cast: Fran\u00e7ois Cluzet, Omar Sy, Anne Le Ny, Audrey Fleurot, Jos\u00e9ph | overview: A true story of two men who should never have met \u2013 a quadriplegic aristocrat who was injured in a paragliding accident and a young man from the proje\n- tmdb_id=299536 | \"Avengers: Infinity War\" (2018) | genres: Adventure, Action, Science Fiction | director: Joe Russo, Anthony Russo | cast: Robert Downey Jr., Chris Evans, Chris Hemsworth, Josh Brolin | overview: As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle, a new danger has emerged from \n- tmdb_id=299534 | \"Avengers: Endgame\" (2019) | genres: Adventure, Science Fiction, Action | director: Anthony Russo, Joe Russo | cast: Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemswort | overview: After the devastating events of Avengers: Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos. With the help of remaini\n- tmdb_id=378064 | \"A Silent Voice: The Movie\" (2016) | genres: Animation, Drama, Romance | director: Naoko Yamada | cast: Miyu Irino, Saori Hayami, Aoi Yuuki, Kensho Ono, Yuki Kaneko | overview: Shouya Ishida starts bullying the new girl in class, Shouko Nishimiya, because she is deaf. But as the teasing continues, the rest of the class starts",
+          "ideal_genres": [
+            "War",
+            "Drama",
+            "Action"
+          ]
+        }
+      ],
+      "signature": {
+        "instructions": "Given a user's movie preferences and a shortlist of candidates,\nselect the single best matching movie tmdb_id.",
+        "fields": [
+          {
+            "prefix": "Preferences:",
+            "description": "What the user wants to watch"
+          },
+          {
+            "prefix": "History Text:",
+            "description": "Movies the user has already seen (do not recommend)"
+          },
+          {
+            "prefix": "Movie List:",
+            "description": "Candidate movies with metadata"
+          },
+          {
+            "prefix": "Reasoning:",
+            "description": "${reasoning}"
+          },
+          {
+            "prefix": "Tmdb Id:",
+            "description": "The tmdb_id of the best matching movie"
+          },
+          {
+            "prefix": "Reason:",
+            "description": "Brief 10-word rationale for the selection"
+          }
+        ]
+      },
+      "lm": null
+    }
+  },
+  "pitcher": {
+    "predict": {
+      "traces": [],
+      "train": [],
+      "demos": [
+        {
+          "augmented": true,
+          "preferences": "I love superhero action movies with epic battles.",
+          "title": "Parasite",
+          "year": "2019",
+          "director": "Bong Joon Ho",
+          "cast": "Song Kang-ho",
+          "tagline": "Act like you own the place.",
+          "overview": "All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpected incident.",
+          "mood_hint": "Match the emotional tone of what the user is asking for.",
+          "reasoning": "The user enjoys high-stakes superhero action and epic battles. While \"Parasite\" is a social thriller, I will frame the pitch by emphasizing the \"class warfare\" and the intense, explosive conflict that erupts toward the end. By focusing on the tension, the \"battle\" for survival, and the shocking power dynamics, I can appeal to their love for high-impact drama while mentioning the director's masterful execution.",
+          "description": "Forget capes; this is a war of strategies and social survival. Bong Joon Ho delivers a high-tension thriller that builds like a ticking time bomb, culminating in an explosive clash that rivals any epic battle. It\u2019s a gripping, visceral experience of infiltration and desperation that will leave you breathless. If you love high stakes and shocking twists, this masterclass in tension is your next obsession."
+        },
+        {
+          "augmented": true,
+          "preferences": "Something funny and romantic, a feel-good date night movie.",
+          "title": "Parasite",
+          "year": "2019",
+          "director": "Bong Joon Ho",
+          "cast": "Song Kang-ho",
+          "tagline": "Act like you own the place.",
+          "overview": "All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpected incident.",
+          "mood_hint": "Match the emotional tone of what the user is asking for.",
+          "reasoning": "The user is looking for a \"funny, romantic, and feel-good date night movie,\" but the provided movie is *Parasite*, a dark social satire/thriller. To fulfill the request, I must pivot the pitch to emphasize the \"funny\" elements of the first half and present it as a captivating, unconventional date night choice that sparks conversation, while maintaining a cozy, upbeat tone to match the mood hint, despite the film's actual trajectory.",
+          "description": "Looking for a date night that's anything but ordinary? Bong Joon Ho delivers a masterclass in wit and suspense that will have you both laughing and leaning in. It's a stylish, clever ride about family dynamics and ambition that transforms from a cheeky game into a gripping experience. If you want a movie that sparks deep conversation and keeps you guessing until the very end, this is the perfect choice for a night in!"
+        },
+        {
+          "augmented": true,
+          "preferences": "I want a dark psychological thriller that messes with my mind.",
+          "title": "Parasite",
+          "year": "2019",
+          "director": "Bong Joon Ho",
+          "cast": "Song Kang-ho",
+          "tagline": "Act like you own the place.",
+          "overview": "All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpected incident.",
+          "mood_hint": "Match the emotional tone of what the user is asking for.",
+          "reasoning": "The user is seeking a mind-bending, dark psychological experience. I will focus on the tension, the social commentary, and the unsettling shift in atmosphere, highlighting Bong Joon Ho's masterful direction to promise the intellectual and emotional \"mind mess\" they desire.",
+          "description": "Prepare to have your perceptions shattered by Bong Joon Ho\u2019s masterpiece. Parasite isn't just a movie; it's a descending spiral into class warfare and desperation. Experience a suffocating tension that slowly tightens until it snaps, leaving you reeling from its visceral, psychological impact. It is a dark, sophisticated game of deception that will leave you questioning everything long after the credits roll. Trust me, this is the mind-trip you're looking for."
+        },
+        {
+          "preferences": "A gripping war movie with realistic battle scenes.",
+          "title": "Parasite",
+          "year": "2019",
+          "director": "Bong Joon Ho",
+          "cast": "Song Kang-ho",
+          "tagline": "Act like you own the place.",
+          "overview": "All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpected incident.",
+          "mood_hint": "Match the emotional tone of what the user is asking for."
+        }
+      ],
+      "signature": {
+        "instructions": "Write a persuasive movie recommendation pitch tailored to the user's preferences.\nThe pitch must be under 480 characters, name a director or actor, and convey\nthe emotional experience rather than summarising the plot.",
+        "fields": [
+          {
+            "prefix": "Preferences:",
+            "description": "What the user wants to watch"
+          },
+          {
+            "prefix": "Title:",
+            "description": "Movie title"
+          },
+          {
+            "prefix": "Year:",
+            "description": "Release year"
+          },
+          {
+            "prefix": "Director:",
+            "description": "Director name"
+          },
+          {
+            "prefix": "Cast:",
+            "description": "Lead actor name"
+          },
+          {
+            "prefix": "Tagline:",
+            "description": "Movie tagline"
+          },
+          {
+            "prefix": "Overview:",
+            "description": "Short movie overview"
+          },
+          {
+            "prefix": "Mood Hint:",
+            "description": "Tone guidance for the pitch"
+          },
+          {
+            "prefix": "Reasoning:",
+            "description": "${reasoning}"
+          },
+          {
+            "prefix": "Description:",
+            "description": "Persuasive pitch under 480 characters"
+          }
+        ]
+      },
+      "lm": null
+    }
+  }
+}
