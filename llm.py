@@ -42,6 +42,19 @@ TOP_MOVIES = _df.copy()
 VALID_IDS = set(_df["tmdb_id"].tolist())
 
 # ---------------------------------------------------------------------------
+# Safe JSON parser for LLM output
+# ---------------------------------------------------------------------------
+
+def _parse_json(text):
+    """Safely parse JSON from LLM output, handling extra text."""
+    text = text.strip()
+    start = text.find("{")
+    end = text.rfind("}") + 1
+    if start >= 0 and end > start:
+        return json.loads(text[start:end])
+    return json.loads(text)
+
+# ---------------------------------------------------------------------------
 # TF-IDF Search Index (replaces SentenceTransformer + ChromaDB)
 # ---------------------------------------------------------------------------
 
@@ -205,7 +218,6 @@ LITERAL_TRANSLATIONS = {
 
 
 def _translate_query(preferences: str) -> str:
-    """Detect non-literal phrases and translate them to concrete search terms."""
     text = preferences.lower()
     translations = []
     for phrase, meaning in LITERAL_TRANSLATIONS.items():
@@ -352,7 +364,6 @@ def _detect_banned_keywords(preferences: str) -> set:
 # ---------------------------------------------------------------------------
 
 def _get_candidates(preferences, history_ids, n=25, banned_keywords=None):
-    """TF-IDF search + hard filters."""
     query = _expand_query(preferences)
     banned_genres = _detect_negative_genres(preferences)
     excluded_langs = _detect_excluded_languages(preferences)
@@ -383,7 +394,6 @@ def _get_candidates(preferences, history_ids, n=25, banned_keywords=None):
             break
 
     if not kept_ids:
-        # Relax vote filter
         for tid, score in results:
             if tid in history_ids:
                 continue
@@ -400,7 +410,6 @@ def _get_candidates(preferences, history_ids, n=25, banned_keywords=None):
                 break
 
     if not kept_ids:
-        # Relax everything except history
         for tid, score in results:
             if tid in history_ids:
                 continue
@@ -418,7 +427,6 @@ def _get_candidates(preferences, history_ids, n=25, banned_keywords=None):
 
 
 def _boost_candidates(candidates, history_ids):
-    """Soft boost for candidates sharing director/cast with watch history."""
     if candidates.empty or not history_ids:
         return candidates
 
@@ -493,7 +501,7 @@ Choose the single best movie from the list below. You MUST use a tmdb_id from th
 
 {movie_list}
 
-Respond with valid JSON only, no markdown, no explanation:
+Respond with ONLY a JSON object, nothing else:
 {{"tmdb_id": <integer>, "reason": "<brief rationale>"}}"""
 
 PITCH_PROMPT_TEMPLATE = """You are a passionate film critic recommending a movie to a friend.
@@ -506,7 +514,7 @@ Overview: {overview}
 
 Write a persuasive, personal pitch - not a plot summary. Lead with a hook. Name the director or a star. Make them feel why this is the right movie for them right now. {mood_hint} Keep it under 300 characters. Be punchy - 2 to 3 sentences max.
 
-Respond with valid JSON only, no markdown:
+Respond with ONLY a JSON object, nothing else:
 {{"description": "<your pitch here>"}}"""
 
 
@@ -551,7 +559,7 @@ def _two_stage_llm(preferences, history, candidates, history_id_set):
         retries=1,
         wait=1.0,
     )
-    chosen_id = int(json.loads(r1.message.content)["tmdb_id"])
+    chosen_id = int(_parse_json(r1.message.content)["tmdb_id"])
 
     if chosen_id not in candidate_ids or chosen_id in history_id_set:
         chosen_id = int(candidates.iloc[0]["tmdb_id"])
@@ -576,7 +584,7 @@ def _two_stage_llm(preferences, history, candidates, history_id_set):
         ),
         timeout=STAGE2_TIMEOUT_SECONDS,
     )
-    description = str(json.loads(r2.message.content).get("description", "")).strip()[:300]
+    description = str(_parse_json(r2.message.content).get("description", "")).strip()[:300]
     return {"tmdb_id": chosen_id, "description": description}
 
 
