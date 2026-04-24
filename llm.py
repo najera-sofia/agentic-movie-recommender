@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Movie Recommendation Agent
+Movie Recommendation Agent - TF-IDF version (no PyTorch/SentenceTransformer)
 
 Environment variables required:
   OLLAMA_API_KEY  - provided by the grader at runtime
@@ -21,18 +21,15 @@ from functools import lru_cache
 import numpy as np
 import ollama
 import pandas as pd
-import chromadb
-from chromadb import EmbeddingFunction, Documents, Embeddings
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 # ---------------------------------------------------------------------------
 MODEL = "gemma4:31b-cloud"
 LLM_TIMEOUT_SECONDS = 9    # stage 1 cap
 STAGE2_TIMEOUT_SECONDS = 7  # stage 2 cap: no retry on stage 2
-                            # total budget: 12 + 8 = 20s, within the 20s limit
 MIN_VOTE_COUNT = 500        # filter out obscure/low-quality movies
-CHROMA_PATH = os.environ.get("CHROMA_DB_DIR", os.path.join(os.path.dirname(__file__), ".chroma_store"))
-DATA_PATH = os.path.join(os.path.dirname(__file__), "tmdb_top1000_movies.csv")
+DATA_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tmdb_top1000_movies.csv")
 
 _df = pd.read_csv(DATA_PATH)
 _df["tmdb_id"] = _df["tmdb_id"].astype(int)
@@ -44,13 +41,35 @@ _df["_score"] = _df["vote_average"] * (
 TOP_MOVIES = _df.copy()
 VALID_IDS = set(_df["tmdb_id"].tolist())
 
-# Pre-load embedding model at startup so first request isn't slow
-print("[INFO] Loading embedding model...", end=" ", flush=True)
-_MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model")
-_EMBED_MODEL = SentenceTransformer(_MODEL_PATH, local_files_only=True)
+# ---------------------------------------------------------------------------
+# TF-IDF Search Index (replaces SentenceTransformer + ChromaDB)
+# ---------------------------------------------------------------------------
+
+def _safe(v, limit=0):
+    s = "" if (v is None or (isinstance(v, float) and np.isnan(v))) else str(v)
+    return s[:limit] if limit else s
+
+def _build_doc(row):
+    """Build a rich text document for TF-IDF from all available metadata."""
+    parts = [
+        _safe(row.get("title")),
+        _safe(row.get("genres")),
+        _safe(row.get("overview"), 400),
+        _safe(row.get("tagline")),
+        _safe(row.get("director")),
+        _safe(row.get("top_cast")),
+        _safe(row.get("keywords"), 200),
+    ]
+    return " ".join(p for p in parts if p)
+
+print("[INFO] Building TF-IDF index...", end=" ", flush=True)
+_docs = [_build_doc(row) for _, row in _df.iterrows()]
+_tfidf = TfidfVectorizer(stop_words="english", max_features=10000)
+_tfidf_matrix = _tfidf.fit_transform(_docs)
+_tmdb_ids = _df["tmdb_id"].tolist()
 print("ready.")
 
-# Pre-built O(1) lookup dict - avoids expensive _df[_df["tmdb_id"]==tid] calls in hot loops
+# Pre-built O(1) lookup dict
 _movie = {
     int(row["tmdb_id"]): {
         "vote_count":         int(row.get("vote_count") or 0),
@@ -64,6 +83,13 @@ _movie = {
     }
     for _, row in _df.iterrows()
 }
+
+def _tfidf_search(query, n=80):
+    """Return top n (tmdb_id, score) pairs by TF-IDF cosine similarity."""
+    query_vec = _tfidf.transform([query])
+    scores = cosine_similarity(query_vec, _tfidf_matrix).flatten()
+    top_indices = scores.argsort()[::-1][:n]
+    return [(int(_tmdb_ids[i]), float(scores[i])) for i in top_indices]
 
 # ---------------------------------------------------------------------------
 # Query expansion
@@ -99,7 +125,6 @@ GENRE_NEGATION_MAP = {
     "action":    ["Action"],
     "drama":     ["Drama"],
     "animated":  ["Animation"],
-    # "violence" and "gore" both ban action, horror, thriller, war
     "violence":  ["Action", "Horror", "Thriller", "War", "Crime"],
     "gore":      ["Horror"],
     "scary":     ["Horror", "Thriller"],
@@ -118,13 +143,10 @@ NEGATION_PATTERNS = [
     r"\bno.{{0,5}}{kw}",
 ]
 
-
-
 # ---------------------------------------------------------------------------
 # Non-literal / sarcastic query translation
 # ---------------------------------------------------------------------------
 
-# Maps non-literal phrases to what the user actually wants
 LITERAL_TRANSLATIONS = {
     "so bad it's good":      "cult classic campy B-movie cheap cheesy absurd low-budget unintentional comedy",
     "so bad its good":       "cult classic campy B-movie cheap cheesy absurd low-budget unintentional comedy",
@@ -194,13 +216,6 @@ def _translate_query(preferences: str) -> str:
     return preferences
 
 
-def _safe(v, limit=0):
-    s = "" if (v is None or (isinstance(v, float) and np.isnan(v))) else str(v)
-    return s[:limit] if limit else s
-
-
-# Map of well-known movies to their thematic search terms
-# Used when user says "like X" to enrich the query with actual themes
 MOVIE_THEME_MAP = {
     "parasite":        "class struggle social satire dark thriller rich poor family infiltration",
     "interstellar":    "space exploration epic sci-fi time physics emotion father daughter",
@@ -217,12 +232,10 @@ MOVIE_THEME_MAP = {
 
 
 def _expand_query(preferences):
-    # First translate any non-literal/sarcastic phrasing
     preferences = _translate_query(preferences)
     text = preferences.lower()
     extras = [exp for key, exp in EXPANSION_MAP.items() if key in text]
 
-    # Enrich "like X" queries with known thematic terms
     for movie_key, themes in MOVIE_THEME_MAP.items():
         if movie_key in text and ("like" in text or "similar" in text or "same" in text):
             extras.append(themes)
@@ -240,8 +253,6 @@ def _detect_negative_genres(preferences):
                 banned.update(genres)
                 break
     return banned
-
-
 
 
 # ---------------------------------------------------------------------------
@@ -275,7 +286,6 @@ LANGUAGE_NEGATION_PATTERNS = [
 
 
 def _detect_excluded_languages(preferences: str) -> set:
-    """Return set of ISO language codes the user wants to exclude."""
     text = preferences.lower()
     excluded = set()
     for lang_name, lang_code in LANGUAGE_CODES.items():
@@ -286,30 +296,27 @@ def _detect_excluded_languages(preferences: str) -> set:
     return excluded
 
 
-
 # ---------------------------------------------------------------------------
 # Runtime limit detection
 # ---------------------------------------------------------------------------
 
 RUNTIME_PATTERNS = [
-    (r'under\s+(\d+)\s*(?:min|minute|minutes|mins|hr|hour|hours)?', 1.0),
-    (r'less\s+than\s+(\d+)\s*(?:min|minute|minutes|mins|hr|hour|hours)?', 1.0),
-    (r'no\s+(?:more\s+than|longer\s+than)\s+(\d+)\s*(?:min|minute|minutes|mins)?', 1.0),
-    (r'(\d+)\s*(?:min|minute|minutes|mins)\s+(?:or\s+less|max|maximum|tops)', 1.0),
-    (r'short', None),   # generic "short" - apply a default cap
-    (r'quick', None),
+    (r'under\s+(\d+)\s*(?:min|minute|minutes|mins|hr|hour|hours)?', 1.0),
+    (r'less\s+than\s+(\d+)\s*(?:min|minute|minutes|mins|hr|hour|hours)?', 1.0),
+    (r'no\s+(?:more\s+than|longer\s+than)\s+(\d+)\s*(?:min|minute|minutes|mins)?', 1.0),
+    (r'(\d+)\s*(?:min|minute|minutes|mins)\s+(?:or\s+less|max|maximum|tops)', 1.0),
+    (r'short', None),
+    (r'quick', None),
 ]
 
 def _detect_runtime_limit(preferences: str):
-    """Return max runtime in minutes, or None if no limit specified."""
     text = preferences.lower()
     for pat, multiplier in RUNTIME_PATTERNS:
         m = re.search(pat, text)
         if m:
             if multiplier is None:
-                return 100  # generic "short" -> cap at 100 min
+                return 100
             val = int(m.group(1))
-            # If hours mentioned, convert
             if 'hr' in pat or 'hour' in pat:
                 if any(w in text[max(0, m.start()-5):m.end()+10] for w in ['hr','hour']):
                     val = val * 60
@@ -317,13 +324,11 @@ def _detect_runtime_limit(preferences: str):
     return None
 
 
-
 # ---------------------------------------------------------------------------
-# Content keyword filtering (catches thematic mismatches genre tags miss)
+# Content keyword filtering
 # ---------------------------------------------------------------------------
 
 CONTENT_KEYWORD_BANS = {
-    # phrases that trigger the ban -> keywords/overview terms to exclude
     "peaceful":    {"vampire", "zombie", "monster", "demon", "ghost", "witch", "supernatural", "killer", "murder", "gore"},
     "no violence": {"vampire", "zombie", "monster", "demon", "ghost", "witch", "supernatural", "killer", "murder", "gore"},
     "not scary":   {"vampire", "zombie", "monster", "demon", "ghost", "witch", "supernatural", "horror"},
@@ -334,7 +339,6 @@ CONTENT_KEYWORD_BANS = {
 
 
 def _detect_banned_keywords(preferences: str) -> set:
-    """Return content keywords to ban from overview/keywords fields."""
     text = preferences.lower()
     banned = set()
     for trigger, keywords in CONTENT_KEYWORD_BANS.items():
@@ -342,112 +346,35 @@ def _detect_banned_keywords(preferences: str) -> set:
             banned.update(keywords)
     return banned
 
-# ---------------------------------------------------------------------------
-# Step 1: ChromaDB with local sentence-transformers embeddings
-# ---------------------------------------------------------------------------
-
-class LocalEmbeddingFunction(EmbeddingFunction):
-    """Uses pre-loaded module-level model - no lazy init overhead."""
-
-    def __call__(self, input: Documents) -> Embeddings:
-        vectors = _EMBED_MODEL.encode(list(input), show_progress_bar=False)
-        return vectors.tolist()
-
-
-def _build_doc(row):
-    """Build a rich text document for embedding from all available metadata."""
-    parts = [
-        _safe(row.get("title")),
-        _safe(row.get("genres")),
-        _safe(row.get("overview"), 400),
-        _safe(row.get("tagline")),
-        _safe(row.get("director")),
-        _safe(row.get("top_cast")),
-        _safe(row.get("keywords"), 200),
-    ]
-    return " ".join(p for p in parts if p)
-
-
-@lru_cache(maxsize=1)
-def _get_collection():
-    """Return ChromaDB collection, building and persisting it on first call."""
-    ef = LocalEmbeddingFunction()
-    client = chromadb.PersistentClient(path=CHROMA_PATH)
-    coll_name = "movies_v2"
-    existing = [c.name for c in client.list_collections()]
-
-    if coll_name in existing:
-        return client.get_collection(coll_name, embedding_function=ef)
-
-    print("[INFO] Building ChromaDB index (one-time setup, ~1 min)...")
-    collection = client.create_collection(
-        coll_name,
-        embedding_function=ef,
-        metadata={"hnsw:space": "cosine"},
-    )
-    records = _df.to_dict("records")
-    batch_size = 100
-    for i in range(0, len(records), batch_size):
-        batch = records[i: i + batch_size]
-        collection.add(
-            documents=[_build_doc(r) for r in batch],
-            ids=[str(r["tmdb_id"]) for r in batch],
-            metadatas=[
-                {
-                    "tmdb_id":    int(r["tmdb_id"]),
-                    "title":      _safe(r.get("title")),
-                    "genres":     _safe(r.get("genres")),
-                    "director":   _safe(r.get("director")),
-                    "top_cast":   _safe(r.get("top_cast")),
-                    "score":      float(r["_score"]),
-                    "vote_count": int(r.get("vote_count") or 0),
-                }
-                for r in batch
-            ],
-        )
-        print(f"  Indexed {min(i + batch_size, len(records))}/{len(records)}", end="\r")
-    print("\n[INFO] ChromaDB index ready.")
-    return collection
-
 
 # ---------------------------------------------------------------------------
-# Step 2: Filtering and ranking
+# Step 1 & 2: TF-IDF retrieval + filtering
 # ---------------------------------------------------------------------------
 
 def _get_candidates(preferences, history_ids, n=25, banned_keywords=None):
-    """Embed the query, retrieve semantically similar movies, apply hard filters."""
+    """TF-IDF search + hard filters."""
     query = _expand_query(preferences)
     banned_genres = _detect_negative_genres(preferences)
-
-    collection = _get_collection()
-    results = collection.query(query_texts=[query], n_results=min(80, len(_df)))
-    metas = results["metadatas"][0]
-
     excluded_langs = _detect_excluded_languages(preferences)
     max_runtime = _detect_runtime_limit(preferences)
 
+    results = _tfidf_search(query, n=80)
+
     kept_ids = []
-    for meta in metas:
-        tid = int(meta["tmdb_id"])
+    for tid, score in results:
         if tid in history_ids:
             continue
-        # Hard filter: skip low-vote-count movies
-        if _movie.get(tid, {}).get("vote_count", 0) < MIN_VOTE_COUNT:
+        m = _movie.get(tid, {})
+        if m.get("vote_count", 0) < MIN_VOTE_COUNT:
             continue
-        # Hard filter: skip banned genres
-        if banned_genres and any(bg in _safe(meta.get("genres")) for bg in banned_genres):
+        if banned_genres and any(bg in m.get("genres", "") for bg in banned_genres):
             continue
-        # Hard filter: runtime limit
         if max_runtime is not None:
-            m = _movie.get(tid, {})
             if m.get("runtime_min", 999) > max_runtime or m.get("year", 0) >= 2025:
                 continue
-        # Hard filter: excluded languages
-        if excluded_langs and _movie.get(tid, {}).get("original_language") in excluded_langs:
+        if excluded_langs and m.get("original_language") in excluded_langs:
             continue
-        # Hard filter: content keyword ban
         if banned_keywords:
-            m = _movie.get(tid, {})
             combined = m.get("keywords", "") + " " + m.get("overview", "")
             if any(kw in combined for kw in banned_keywords):
                 continue
@@ -456,33 +383,27 @@ def _get_candidates(preferences, history_ids, n=25, banned_keywords=None):
             break
 
     if not kept_ids:
-        # Relax vote filter but keep genre, language, runtime, keyword filters
-        for meta in metas:
-            tid = int(meta["tmdb_id"])
+        # Relax vote filter
+        for tid, score in results:
             if tid in history_ids:
                 continue
-            if banned_genres and any(bg in _safe(meta.get("genres")) for bg in banned_genres):
+            m = _movie.get(tid, {})
+            if banned_genres and any(bg in m.get("genres", "") for bg in banned_genres):
                 continue
             if max_runtime is not None:
-                m = _movie.get(tid, {})
                 if m.get("runtime_min", 999) > max_runtime or m.get("year", 0) >= 2025:
                     continue
-            if excluded_langs and _movie.get(tid, {}).get("original_language") in excluded_langs:
+            if excluded_langs and m.get("original_language") in excluded_langs:
                 continue
             kept_ids.append(tid)
             if len(kept_ids) >= n:
                 break
 
     if not kept_ids:
-        # Over-constrained: relax genre/language filters but keep runtime and history
-        for meta in metas:
-            tid = int(meta["tmdb_id"])
+        # Relax everything except history
+        for tid, score in results:
             if tid in history_ids:
                 continue
-            if max_runtime is not None:
-                m = _movie.get(tid, {})
-                if m.get("runtime_min", 999) > max_runtime or m.get("year", 0) >= 2025:
-                    continue
             kept_ids.append(tid)
             if len(kept_ids) >= n:
                 break
@@ -551,7 +472,6 @@ def _call_with_timeout(fn, timeout):
 
 
 def _call_with_retry(fn, timeout, retries=1, wait=2.0):
-    """Call fn with timeout; retry once after a short wait on failure."""
     last_exc = None
     for attempt in range(retries + 1):
         if attempt > 0:
@@ -609,7 +529,6 @@ def _two_stage_llm(preferences, history, candidates, history_id_set):
     )
 
     candidate_ids = set(candidates["tmdb_id"].tolist())
-    # Top 5 only, no overviews - keeps stage 1 prompt small for fast API response
     top5 = candidates.head(5)
     movie_list = "\n".join(
         f'tmdb_id={int(r.tmdb_id)} | "{r.title}" ({_safe(r.year)}) | {_safe(r.genres)} | dir: {_safe(r.director) or "N/A"}'
@@ -617,7 +536,6 @@ def _two_stage_llm(preferences, history, candidates, history_id_set):
     )
     history_text = ", ".join(f'"{h}"' for h in history) if history else "none"
 
-    # Stage 1: select best candidate (up to 12s)
     select_prompt = SELECTION_PROMPT_TEMPLATE.format(
         preferences=preferences,
         history_text=history_text,
@@ -635,13 +553,11 @@ def _two_stage_llm(preferences, history, candidates, history_id_set):
     )
     chosen_id = int(json.loads(r1.message.content)["tmdb_id"])
 
-    # Must be from our filtered candidate list, not history
     if chosen_id not in candidate_ids or chosen_id in history_id_set:
         chosen_id = int(candidates.iloc[0]["tmdb_id"])
 
     chosen = candidates[candidates["tmdb_id"] == chosen_id].iloc[0]
 
-    # Stage 2: write persuasive pitch (up to 7s, keeping total under 20s)
     pitch_prompt = PITCH_PROMPT_TEMPLATE.format(
         preferences=preferences,
         title=chosen["title"],
@@ -669,7 +585,6 @@ def _two_stage_llm(preferences, history, candidates, history_id_set):
 # ---------------------------------------------------------------------------
 
 def _fallback(candidates, history_ids, banned_genres=None, excluded_langs=None, max_runtime=None, banned_keywords=None):
-    """Return the best candidate deterministically, respecting all active filters."""
     if banned_genres is None:
         banned_genres = set()
     if banned_keywords is None:
@@ -678,7 +593,6 @@ def _fallback(candidates, history_ids, banned_genres=None, excluded_langs=None, 
         tid = int(row["tmdb_id"])
         if tid in history_ids:
             continue
-        # Apply quality floor and genre ban in fallback too
         if int(row.get("vote_count", 0)) < MIN_VOTE_COUNT:
             continue
         if float(row.get("vote_average", 0)) < 5.5:
@@ -699,7 +613,6 @@ def _fallback(candidates, history_ids, banned_genres=None, excluded_langs=None, 
         director = _safe(row.get("director"))
         cast = _safe(row.get("top_cast")).split(",")[0].strip()
         genres = _safe(row.get("genres"))
-        # Build a readable fallback description - still better than a data dump
         year = _safe(row.get("year"))
         rating = f"{row['vote_average']:.1f}"
         if director and cast:
@@ -709,7 +622,6 @@ def _fallback(candidates, history_ids, banned_genres=None, excluded_langs=None, 
         else:
             desc = f'"{row["title"]}" ({year}) is one of the most acclaimed {genres.lower()} films available, rated {rating}/10 by {int(row["vote_count"]):,} fans.'
         return {"tmdb_id": tid, "description": desc[:499]}
-    # Last resort: highest scored movie not in history, with quality floor
     pool = _df[~_df["tmdb_id"].isin(history_ids)]
     pool = pool[pool["vote_average"] >= 7.0]
     pool = pool[pool["vote_count"] >= MIN_VOTE_COUNT]
@@ -731,7 +643,6 @@ def _fallback(candidates, history_ids, banned_genres=None, excluded_langs=None, 
 # ---------------------------------------------------------------------------
 
 def get_recommendation(preferences: str, history: list, history_ids: list = []) -> dict:
-    """Return dict with 'tmdb_id' (int) and 'description' (str)."""
     history_id_set = {int(i) for i in history_ids}
 
     banned_genres = _detect_negative_genres(preferences)
