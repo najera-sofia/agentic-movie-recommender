@@ -43,9 +43,11 @@ async def health2():
 
 @app.post("/recommend")
 async def recommend(request: RecommendationRequest):
-    while recommender is None:
-        import time
-        time.sleep(0.5)
+    import asyncio
+    waited = 0
+    while recommender is None and waited < 120:
+        await asyncio.sleep(1)
+        waited += 1
     history_ids = [item.tmdb_id for item in request.history]
     result = recommender(
         preferences=request.preferences,
